@@ -14,12 +14,26 @@ import {
 	faMinus,
 	faXmark,
 	faDivide,
+	faSun,
+	faMoon,
 } from "@fortawesome/free-solid-svg-icons";
+
+// dark mode
+import useDarkMode from "../hooks/useDarkMode";
 
 const Keys = () => {
 	const dispatch = useDispatch();
 
 	// todo: add handle key press
+
+	const [darkTheme, setDarkTheme] = useDarkMode();
+	const handleTheme = () => setDarkTheme(!darkTheme);
+
+	const darkModeIcon = darkTheme ? (
+		<FontAwesomeIcon icon={faSun} />
+	) : (
+		<FontAwesomeIcon icon={faMoon} />
+	);
 
 	return (
 		<div id="keys" className="grid grid-cols-4 grid-rows-5 gap-3">
@@ -57,32 +71,39 @@ const Keys = () => {
 				],
 
 				// row 2
-				["one", "1", "49", () => dispatch(setInput("1"))],
-				["two", "2", "50", () => dispatch(setInput("2"))],
-				["three", "3", "51", () => dispatch(setInput("3"))],
+				["one", "1", "49", () => dispatch(setInput("1")), ""],
+				["two", "2", "50", () => dispatch(setInput("2")), ""],
+				["three", "3", "51", () => dispatch(setInput("3")), ""],
 				[
 					"equals",
 					"=",
 					"13",
 					() => dispatch(calculate()),
-					"row-span-4 bg-orange-500 dark:bg-orange-900",
+					"row-span-3 bg-orange-500 dark:bg-orange-900",
 				],
 
 				// row 3
-				["four", "4", "52", () => dispatch(setInput("4"))],
-				["five", "5", "53", () => dispatch(setInput("5"))],
-				["six", "6", "54", () => dispatch(setInput("6"))],
+				["four", "4", "52", () => dispatch(setInput("4")), ""],
+				["five", "5", "53", () => dispatch(setInput("5")), ""],
+				["six", "6", "54", () => dispatch(setInput("6")), ""],
 
 				// row 4
-				["seven", "7", "55", () => dispatch(setInput("7"))],
-				["eight", "8", "56", () => dispatch(setInput("8"))],
-				["nine", "9", "57", () => dispatch(setInput("9"))],
+				["seven", "7", "55", () => dispatch(setInput("7")), ""],
+				["eight", "8", "56", () => dispatch(setInput("8")), ""],
+				["nine", "9", "57", () => dispatch(setInput("9")), ""],
 
 				// row 5
-				["decimal", ".", "190", () => dispatch(setInput("."))],
-				["zero", "0", "48", () => dispatch(setInput("0"))],
+				["decimal", ".", "190", () => dispatch(setInput(".")), ""],
+				["zero", "0", "48", () => dispatch(setInput("0")), ""],
 				// todo: if no input, display CE, else display AC
-				["clear", "AC", "8", () => dispatch(clear())],
+				["clear", "AC", "8", () => dispatch(clear()), ""],
+				[
+					"darkmode",
+					darkModeIcon,
+					"84",
+					handleTheme,
+					"bg-orange-500 dark:bg-orange-900",
+				],
 			].map(([id, keyText, keycode, onClick, className]) => (
 				<button
 					id={id}
