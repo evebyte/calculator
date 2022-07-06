@@ -46,28 +46,28 @@ const Keys = () => {
 					<FontAwesomeIcon icon={faPlus} />,
 					"187",
 					() => dispatch(setOperator("+")),
-					"!bg-black/20 dark:!bg-white/20",
+					"!bg-white/50 dark:!bg-black/50",
 				],
 				[
 					"subtract",
 					<FontAwesomeIcon icon={faMinus} />,
 					"189",
 					() => dispatch(setOperator("-")),
-					"!bg-black/20 dark:!bg-white/20",
+					"!bg-white/50 dark:!bg-black/50",
 				],
 				[
 					"multiply",
 					<FontAwesomeIcon icon={faXmark} />,
 					"188",
 					() => dispatch(setOperator("*")),
-					"!bg-black/20 dark:!bg-white/20",
+					"!bg-white/50 dark:!bg-black/50",
 				],
 				[
 					"divide",
 					<FontAwesomeIcon icon={faDivide} />,
 					"191",
 					() => dispatch(setOperator("/")),
-					"!bg-black/20 dark:!bg-white/20",
+					"!bg-white/50 dark:!bg-black/50",
 				],
 
 				// row 2
@@ -79,7 +79,7 @@ const Keys = () => {
 					"=",
 					"13",
 					() => dispatch(calculate()),
-					"row-span-3 !bg-black/30 dark:!bg-white/30",
+					"row-span-3 !bg-white/70 dark:!bg-black/70",
 				],
 
 				// row 3
@@ -99,7 +99,7 @@ const Keys = () => {
 					darkModeIcon,
 					"84",
 					handleTheme,
-					"rounded-bl-lg !bg-black/20 dark:!bg-white/20",
+					"rounded-bl-lg !bg-white/50 dark:!bg-black/50",
 				],
 				["zero", "0", "48", () => dispatch(setInput("0")), ""],
 				["decimal", ".", "190", () => dispatch(setInput(".")), ""],
@@ -109,7 +109,7 @@ const Keys = () => {
 					"AC",
 					"8",
 					() => dispatch(clear()),
-					"rounded-br-lg !bg-black/20 dark:!bg-white/20",
+					"rounded-br-lg !bg-white/50 dark:!bg-black/50",
 				],
 			].map(([id, keyText, keycode, onClick, className]) => (
 				<button
@@ -118,7 +118,7 @@ const Keys = () => {
 					onClick={onClick}
 					className={`key p-3 text-xl font-bold
 						
-                            bg-white/30 dark:bg-black/20 
+                            bg-white/30 dark:bg-black/30 
 
                             hover:opacity-50 
 

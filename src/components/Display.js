@@ -14,13 +14,13 @@ const Display = () => {
 		<div
 			id=""
 			className="
-            bg-black/30 dark:bg-black/50
+            bg-white/40 dark:bg-black/30
             rounded-t-lg 
             p-2
             text-4xl text-right
             "
 		>
-			<p id="history" className="text-orange-500 dark:text-orange-900">
+			<p id="history" className="text-black/50 dark:text-white/50">
 				{history}
 			</p>
 			<p id="display" className="">
