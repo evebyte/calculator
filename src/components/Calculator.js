@@ -5,7 +5,7 @@ const Calculator = () => {
 	return (
 		<div
 			id="calculator"
-			className=" w-5/6 md:w-3/6 lg:w-2/6 mx-auto my-0 p-2 rounded-lg bg-black/30"
+			className=" w-5/6 md:w-3/6 lg:w-2/6 mx-auto my-0 rounded-lg shadow-lg"
 		>
 			<Display />
 			<Keys />

@@ -15,12 +15,12 @@ const Display = () => {
 			id=""
 			className="
             bg-black/30 dark:bg-black/50
-            rounded-lg 
-            mb-3 p-2
+            rounded-t-lg 
+            p-2
             text-4xl text-right
             "
 		>
-			<p id="history" className="text-amber-500 dark:text-amber-900">
+			<p id="history" className="text-orange-500 dark:text-orange-900">
 				{history}
 			</p>
 			<p id="display" className="">
