@@ -1,5 +1,5 @@
 // react-redux
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
 	setInput,
 	setOperator,
@@ -24,7 +24,7 @@ import useDarkMode from "../hooks/useDarkMode";
 const Keys = () => {
 	const dispatch = useDispatch();
 
-	// todo: add handle key press
+	// todo: add handle key press so you can use keyboard
 
 	const [darkTheme, setDarkTheme] = useDarkMode();
 	const handleTheme = () => setDarkTheme(!darkTheme);
@@ -103,7 +103,6 @@ const Keys = () => {
 				],
 				["zero", "0", "48", () => dispatch(setInput("0")), ""],
 				["decimal", ".", "190", () => dispatch(setInput(".")), ""],
-				// todo: if no input, display CE, else display AC
 				[
 					"clear",
 					"AC",

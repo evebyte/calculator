@@ -1,7 +1,6 @@
 // react-redux
 import { useSelector } from "react-redux";
 import {
-	selectTotal,
 	selectInput,
 	selectHistory,
 } from "../features/calculator/calculatorSlice";
@@ -18,11 +17,14 @@ const Display = () => {
             rounded-t-lg 
             p-2
             text-4xl text-right
+			overflow-x-auto
             "
 		>
+			{/* display history of input here */}
 			<p id="history" className="text-black/50 dark:text-white/50">
 				{history}
 			</p>
+			{/* display result here */}
 			<p id="display" className="">
 				{input}
 			</p>
