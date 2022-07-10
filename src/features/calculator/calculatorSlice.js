@@ -86,7 +86,7 @@ export const calculatorSlice = createSlice({
 
 			// calculate the total
 			if (operator === "+") {
-				state.total = parseFloat(prevInput) + parseFloat(state.input);
+				state.total = parseFloat(prevInput) + parseFloat(input);
 			} else if (operator === "-") {
 				state.total = parseFloat(prevInput) - parseFloat(input);
 			} else if (operator === "*") {
