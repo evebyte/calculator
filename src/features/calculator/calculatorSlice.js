@@ -15,6 +15,7 @@ export const calculatorSlice = createSlice({
 	initialState,
 	reducers: {
 		// todo: add ability to have negative numbers
+		// bug: when you click 0.5 as the first input, it displays .5 in the history, fix this
 		setInput: (state, action) => {
 			// if input is 0 and the payload is 0, do nothing
 			if (state.input.join() === "0" && action.payload === "0") {
