@@ -52,13 +52,14 @@ export const calculatorSlice = createSlice({
 				state.history.push(action.payload);
 			}
 		},
+		// bug: when clicking multiple operators in a row, it concatenates them together in the input and history
 		setOperator: (state, action) => {
 			// if the input is 0, do nothing
 			if (state.input.join() === "0") {
 				return;
 			}
 			// if the action payload is an operator that is already in the input, do nothing
-			else if (state.operator === action.payload) {
+			else if (state.operator === action.payload && state.operator !== "-") {
 				return;
 			}
 			// if the input is an operator, but the action payload is a different operator, replace the operator with the action payload
@@ -70,16 +71,30 @@ export const calculatorSlice = createSlice({
 				state.history.pop();
 				state.history.push(action.payload);
 			}
+			// todo: add ability to create a negative number
+			else if (state.operator === "-" && action.payload === "-") {
+				state.input = [action.payload];
+				state.prevInput = [action.payload, state.prevInput.join()];
+				state.history.pop();
+				state.history.push(action.payload);
+			}
+			// if you calculate a total and then click an operator, it should use the previous total as the previous input
+			else if (state.prevTotal !== 0 && state.history.includes("=")) {
+				state.prevInput = [`${state.prevTotal}`];
+				state.history = [state.prevInput, action.payload];
+				state.operator.push(action.payload);
+				state.input = [action.payload];
+				// state.history.push(action.payload);
+			}
 			// default case, set the operator
 			else {
-				state.operator.push(action.payload);
+				state.operator = [action.payload];
 				state.history.push(action.payload);
-				state.prevInput = state.input;
+				state.prevInput = [state.input.join("")];
 				state.input = state.operator;
 			}
-			//
 		},
-		calculate: (state, action) => {
+		calculate: (state) => {
 			const input = state.input.join("");
 			const prevInput = state.prevInput.join("");
 			const operator = state.operator.join("");
@@ -98,9 +113,14 @@ export const calculatorSlice = createSlice({
 			}
 
 			state.history.push("=", state.total); // add to history
-			state.input = state.total; // set total
+			state.input = [`${state.total}`]; // set total
 
 			// todo: add ability to calculate multiple times using the same operator and previous total
+
+			// reset the operator and previous total
+			state.operator = [];
+			state.prevTotal = state.total;
+			state.total = 0;
 		},
 		clear: (state) => {
 			state.input = ["0"];
@@ -108,6 +128,7 @@ export const calculatorSlice = createSlice({
 			state.operator = [];
 			state.history = [];
 			state.total = 0;
+			state.prevTotal = 0;
 			state.error = null;
 		},
 	},
