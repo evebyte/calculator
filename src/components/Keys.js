@@ -38,11 +38,13 @@ const Keys = () => {
 	return (
 		<div id="keys" className="grid grid-cols-4 grid-rows-5">
 			{[
-				// parameters: id, keyText, keycode, onClick, className
+				// note: the key parameter is for react
+				// parameters: id, key, keyText, keycode, onClick, className
 
 				// row 1
 				[
 					"add",
+
 					<FontAwesomeIcon icon={faPlus} />,
 					"187",
 					() => dispatch(setOperator("+")),
@@ -113,6 +115,7 @@ const Keys = () => {
 			].map(([id, keyText, keycode, onClick, className]) => (
 				<button
 					id={id}
+					key={id}
 					keycode={keycode}
 					onClick={onClick}
 					className={`key p-3 text-xl font-bold
