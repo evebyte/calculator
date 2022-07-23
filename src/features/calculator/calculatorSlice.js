@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
 	input: ["0"],
-	prevInput: ["0"],
+	prevInput: [],
 	operator: [],
 	history: [],
 	total: 0,
@@ -14,8 +14,9 @@ export const calculatorSlice = createSlice({
 	name: "calculator",
 	initialState,
 	reducers: {
+		// todo: refactor for readability by using easy to read names for conditions + switch statements
 		setInput: (state, action) => {
-			// if input is 0 and the payload is 0 and there has been no history, push the 0 to the history
+			// when the input is empty and you want to add a 0 to the history
 			if (
 				action.payload === "0" &&
 				state.input.join("") === "0" &&
@@ -24,11 +25,13 @@ export const calculatorSlice = createSlice({
 				state.history.push(action.payload);
 				return;
 			}
-			// if the input is 0 and the payload is 0, do nothing
+
+			//  prevent repeating 0's before a decimal
 			else if (action.payload === "0" && state.input.join("") === "0") {
 				return;
 			}
-			// if the input is a decimal
+
+			// prevents repeating decimals
 			else if (action.payload === ".") {
 				// if the input already has a decimal, do nothing
 				if (!state.input.includes(".")) {
@@ -36,70 +39,103 @@ export const calculatorSlice = createSlice({
 					state.history.push(action.payload);
 				}
 			}
-			// if the payload is not 0 and the input is 0, replace input with payload
+
+			// todo: make negative numbers possible
+			// else if (
+			// 	state.input[0] === "-" &&
+			// 	action.payload !== "0" &&
+			// 	state.operator !== []
+			// ) {
+			// 	state.input.push(action.payload);
+			// 	state.input.join("");
+			// 	state.history.push(action.payload);
+			// }
+
+			// prevents 05, would display as 5
 			else if (action.payload !== "0" && state.input.join() === "0") {
+				state.history.pop();
 				state.input = [action.payload];
 				state.history.push(action.payload);
 			}
-			// if the input is an operator, replace it with the payload
+
+			// when the input is an operator (except -), replace it with a number
 			else if (
 				state.input.join() === state.operator.join() &&
-				state.operator !== action.payload
+				state.operator !== "-"
 			) {
 				state.input = [action.payload];
 				state.history.push(action.payload);
 			}
-			// todo: add ability to make negative numbers
-			// ...
-			// else if (state.input === "-" && state.history.includes(/[+-/*]/g)) {
-			// 	state.input.push(action.payload);
-			// 	state.history.push(action.payload);
-			// }
 
-			// default case, push the payload to the input
+			// push the payload to the input
 			else {
 				state.input.push(action.payload);
 				state.history.push(action.payload);
 			}
 		},
 		setOperator: (state, action) => {
-			// if the input is 0, do nothing
-			if (state.input.join() === "0" && action.payload !== "-") {
+			// prevents operators from being added to the input if the input is empty
+			if (state.input.join() === "0" && state.history.length === 0) {
 				return;
 			}
-			// if the action payload is an operator that is already in the input, do nothing
+
+			// prevents repeat operators like ++, //, or **
 			else if (
-				state.operator.join("") === action.payload &&
-				state.operator.join("") !== "-"
+				state.input.join("") === action.payload &&
+				action.payload !== "-"
 			) {
 				return;
 			}
-			// if the input is an operator, but the action payload is a different operator, replace the operator with the action payload
+
+			// If 2 or more operators are entered consecutively, the operation performed should be the last operator entered (excluding the negative (-) sign.
 			else if (
-				state.input.join("") === state.operator.join("") &&
-				state.operator !== action.payload
+				state.operator.join("") === state.input.join("") &&
+				action.payload !== "-"
 			) {
 				state.operator = [action.payload];
 				state.input = [action.payload];
 				state.history.pop();
 				state.history.push(action.payload);
 			}
-			// todo: add ability to create a negative number
-			// //  If 2 or more operators are entered consecutively, the operation performed should be the last operator entered (excluding the negative (-) sign).
-			// else if (action.payload === "-") {
-			// 	state.operator = [action.payload];
+
+			// todo: allows you to make negative numbers
+			// else if (action.payload === "-" && !state.history.includes("-")) {
 			// 	state.input = [action.payload];
+			// 	state.history.push(action.payload);
 			// }
 
-			// todo: add ability to do consectutive calculations like 4 + 8 - 6 * 3 / 2 = 3
+			// for consectutive calculations using immediate calculation logic: like 3 + 5 * 6 - 2 / 4 = 11.5
+			else if (
+				state.history.length >= 2 &&
+				state.prevInput.length !== 0 &&
+				state.operator.length !== 0
+			) {
+				const input = state.input.join("");
+				const prevInput = state.prevInput.join("");
+				const operator = state.operator.join("");
 
-			// if you calculate a total and then click an operator, it should use the previous total as the previous input
-			else if (state.prevTotal !== 0 && state.history.includes("=")) {
-				state.prevInput = [`${state.prevTotal}`];
-				state.history = [state.prevInput, action.payload];
-				state.operator.push(action.payload);
+				// calculate the total
+				if (operator === "+") {
+					state.total = parseFloat(prevInput) + parseFloat(input);
+				} else if (operator === "-") {
+					state.total = parseFloat(prevInput) - parseFloat(input);
+				} else if (operator === "*") {
+					state.total = parseFloat(prevInput) * parseFloat(input);
+				} else if (operator === "/") {
+					state.total = parseFloat(prevInput) / parseFloat(input);
+				} else {
+					return;
+				}
+
+				state.history = [`${state.total}${action.payload}`];
 				state.input = [action.payload];
+				state.operator = [action.payload];
+
+				state.prevInput = [state.total];
+				state.prevTotal = state.total;
+				state.total = 0;
 			}
+
 			// default case, set the operator
 			else {
 				state.operator = [action.payload];
@@ -137,7 +173,7 @@ export const calculatorSlice = createSlice({
 		},
 		clear: (state) => {
 			state.input = ["0"];
-			state.prevInput = ["0"];
+			state.prevInput = [];
 			state.operator = [];
 			state.history = [];
 			state.total = 0;
