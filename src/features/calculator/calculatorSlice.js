@@ -1,145 +1,142 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+// Initial state of the calculator
 const initialState = {
-	input: ["0"],
-	prevInput: ["0"],
-	operator: [],
-	history: [],
-	total: 0,
-	prevTotal: 0,
-	error: null,
+	input: "0", // The current input value (string)
+	currentOperation: null, // The current operation (+, -, *, /) or null if no operation is set
+	prevValue: null, // The previous input value stored when an operator is set (number)
+	displayValue: "0", // The value currently displayed on the calculator (string)
+	afterEqual: false, // A flag to indicate if the calculator is in a state just after the equals button has been pressed
 };
 
 export const calculatorSlice = createSlice({
 	name: "calculator",
 	initialState,
 	reducers: {
-		// todo: add ability to have negative numbers
-		// bug: when you click 0.5 as the first input, it displays .5 in the history, fix this
-		setInput: (state, action) => {
-			// if input is 0 and the payload is 0, do nothing
-			if (state.input.join() === "0" && action.payload === "0") {
+		// Appends a number (or decimal point) to the current input
+		appendNumber: (state, action) => {
+			const number = action.payload;
+
+			// If the previous operation was "=", reset the displayValue and input
+			if (state.afterEqual) {
+				state.displayValue = number;
+				state.input = number;
+				state.afterEqual = false;
+			} else if (state.input === "0" && number !== "0") {
+				// If the current input is "0" and the input number is not "0", update the displayValue and input
+				state.displayValue = number;
+				state.input = number;
+			} else if (state.input === "0" && number === "0") {
+				// If the current input is "0" and the input number is "0", do nothing
+			} else if (number !== ".") {
+				// If the input number is not a decimal point, append it to the displayValue and input
+				state.displayValue += number;
+				state.input += number;
+			} else if (!state.input.includes(".")) {
+				// If the input number is a decimal point and the current input doesn't have one, append it to the displayValue and input
+				state.displayValue += ".";
+				state.input += ".";
+			}
+		},
+		// Sets the current operator and updates the prevValue if necessary
+		setOperator: (state, action) => {
+			const operator = action.payload;
+
+			// If the input is an operator, replace it with the new operator
+			if (
+				state.input === "+" ||
+				state.input === "-" ||
+				state.input === "*" ||
+				state.input === "/"
+			) {
+				state.displayValue = operator;
+				state.input = operator;
+				state.currentOperation = operator;
 				return;
 			}
-			// if the input is 0 and the payload is a decimal, push the decimal to the input
-			else if (state.input.join() === "0" && action.payload === ".") {
-				state.input.push(action.payload);
-				state.history.push(action.payload);
+
+			// Handle negative numbers
+			if (operator === "-" && state.input === "0") {
+				state.displayValue = "-";
+				state.input = "-";
+				return;
 			}
-			// if input is 0 and the payload is not 0, replace input with payload
-			else if (state.input.join() === "0" && action.payload !== "0") {
-				state.input = [action.payload];
-				state.history.push(action.payload);
-			}
-			// if the payload is a decimal, do nothing if it already exists
-			else if (action.payload === ".") {
-				if (!state.input.includes(".")) {
-					state.input.push(action.payload);
-					state.history.push(action.payload);
+
+			// Calculate the result if the previous operation was not "="
+			if (!state.afterEqual) {
+				if (state.prevValue === null) {
+					// If prevValue is null, store the current input value as a number
+					state.prevValue = parseFloat(state.input);
+				} else if (state.currentOperation) {
+					// If there is a current operation, calculate the result using prevValue, input and the current operation
+					state.prevValue = calculateValue(
+						state.prevValue,
+						parseFloat(state.input),
+						state.currentOperation
+					);
 				}
 			}
-			// if the input is an operator, replace it with the payload
-			else if (
-				state.input.join() === state.operator.join() &&
-				state.operator !== action.payload
-			) {
-				state.input = [action.payload];
-				state.history.push(action.payload);
-			}
-			// default case, push the payload to the input
-			else {
-				state.input.push(action.payload);
-				state.history.push(action.payload);
-			}
+
+			// Update the state after setting a new operator
+			state.afterEqual = false;
+			state.displayValue = operator;
+			state.input = "0";
+			state.currentOperation = operator;
 		},
-		// bug: when clicking multiple operators in a row, it concatenates them together in the input and history
-		setOperator: (state, action) => {
-			// if the input is 0, do nothing
-			if (state.input.join() === "0") {
-				return;
-			}
-			// if the action payload is an operator that is already in the input, do nothing
-			else if (state.operator === action.payload && state.operator !== "-") {
-				return;
-			}
-			// if the input is an operator, but the action payload is a different operator, replace the operator with the action payload
-			else if (
-				state.input === state.operator &&
-				state.operator !== action.payload
-			) {
-				state.operator = action.payload;
-				state.history.pop();
-				state.history.push(action.payload);
-			}
-			// todo: add ability to create a negative number
-			else if (state.operator === "-" && action.payload === "-") {
-				state.input = [action.payload];
-				state.prevInput = [action.payload, state.prevInput.join()];
-				state.history.pop();
-				state.history.push(action.payload);
-			}
-			// if you calculate a total and then click an operator, it should use the previous total as the previous input
-			else if (state.prevTotal !== 0 && state.history.includes("=")) {
-				state.prevInput = [`${state.prevTotal}`];
-				state.history = [state.prevInput, action.payload];
-				state.operator.push(action.payload);
-				state.input = [action.payload];
-				// state.history.push(action.payload);
-			}
-			// default case, set the operator
-			else {
-				state.operator = [action.payload];
-				state.history.push(action.payload);
-				state.prevInput = [state.input.join("")];
-				state.input = state.operator;
-			}
-		},
+		// Calculates and updates the displayValue based on the current input, prevValue and currentOperation
 		calculate: (state) => {
-			const input = state.input.join("");
-			const prevInput = state.prevInput.join("");
-			const operator = state.operator.join("");
+			if (state.prevValue !== null && state.currentOperation) {
+				const currentValue = parseFloat(state.input);
 
-			// calculate the total
-			if (operator === "+") {
-				state.total = parseFloat(prevInput) + parseFloat(input);
-			} else if (operator === "-") {
-				state.total = parseFloat(prevInput) - parseFloat(input);
-			} else if (operator === "*") {
-				state.total = parseFloat(prevInput) * parseFloat(input);
-			} else if (operator === "/") {
-				state.total = parseFloat(prevInput) / parseFloat(input);
-			} else {
-				return;
+				// Calculate the result using prevValue, input and currentOperation
+				state.prevValue = calculateValue(
+					state.prevValue,
+					currentValue,
+					state.currentOperation
+				);
+
+				// Update the displayValue and reset input, afterEqual and currentOperation
+				state.displayValue = roundValue(state.prevValue).toString();
+				state.input = "0";
+				state.afterEqual = true;
+				state.currentOperation = null;
 			}
-
-			state.history.push("=", state.total); // add to history
-			state.input = [`${state.total}`]; // set total
-
-			// todo: add ability to calculate multiple times using the same operator and previous total
-
-			// reset the operator and previous total
-			state.operator = [];
-			state.prevTotal = state.total;
-			state.total = 0;
 		},
+		// Resets the calculator state to the initial state
 		clear: (state) => {
-			state.input = ["0"];
-			state.prevInput = ["0"];
-			state.operator = [];
-			state.history = [];
-			state.total = 0;
-			state.prevTotal = 0;
-			state.error = null;
+			state.input = "0";
+			state.currentOperation = null;
+			state.prevValue = null;
+			state.displayValue = "0";
+			state.afterEqual = false;
 		},
 	},
 });
 
-export const { setInput, setOperator, calculate, clear } =
+// Helper function to perform a calculation with two numbers and an operator
+function calculateValue(num1, num2, operator) {
+	switch (operator) {
+		case "+":
+			return num1 + num2;
+		case "-":
+			return num1 - num2;
+		case "*":
+			return num1 * num2;
+		case "/":
+			return num1 / num2;
+		default:
+			return num1;
+	}
+}
+
+// Helper function to round a number to a fixed decimal place (4 decimal places by default)
+function roundValue(value, decimalPlaces = 4) {
+	return parseFloat(value.toFixed(decimalPlaces));
+}
+
+export const { appendNumber, setOperator, calculate, clear } =
 	calculatorSlice.actions;
 
-export const selectInput = (state) => state.calculator.input;
-export const selectOperator = (state) => state.calculator.operator;
-export const selectHistory = (state) => state.calculator.history;
-export const selectTotal = (state) => state.calculator.total;
+export const selectDisplayValue = (state) => state.calculator.displayValue;
 
 export default calculatorSlice.reducer;

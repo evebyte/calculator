@@ -1,13 +1,10 @@
 // react-redux
 import { useSelector } from "react-redux";
-import {
-	selectInput,
-	selectHistory,
-} from "../features/calculator/calculatorSlice";
+import { selectDisplayValue } from "../features/calculator/calculatorSlice";
 
 const Display = () => {
-	const history = useSelector(selectHistory);
-	const input = useSelector(selectInput);
+	// const history = useSelector(selectHistory);
+	const displayValue = useSelector(selectDisplayValue);
 
 	return (
 		<div
@@ -21,12 +18,12 @@ const Display = () => {
             "
 		>
 			{/* display history of input here */}
-			<p id="history" className="text-black/50 dark:text-white/50">
+			{/* <p id="history" className="text-black/50 dark:text-white/50">
 				{history}
-			</p>
+			</p> */}
 			{/* display result here */}
 			<p id="display" className="">
-				{input}
+				{displayValue}
 			</p>
 		</div>
 	);

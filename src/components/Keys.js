@@ -1,7 +1,7 @@
 // react-redux
 import { useDispatch } from "react-redux";
 import {
-	setInput,
+	appendNumber,
 	setOperator,
 	calculate,
 	clear,
@@ -71,9 +71,9 @@ const Keys = () => {
 				],
 
 				// row 2
-				["seven", "7", "55", () => dispatch(setInput("7")), ""],
-				["eight", "8", "56", () => dispatch(setInput("8")), ""],
-				["nine", "9", "57", () => dispatch(setInput("9")), ""],
+				["seven", "7", "55", () => dispatch(appendNumber("7")), ""],
+				["eight", "8", "56", () => dispatch(appendNumber("8")), ""],
+				["nine", "9", "57", () => dispatch(appendNumber("9")), ""],
 				[
 					"equals",
 					"=",
@@ -83,15 +83,15 @@ const Keys = () => {
 				],
 
 				// row 3
-				["four", "4", "52", () => dispatch(setInput("4")), ""],
-				["five", "5", "53", () => dispatch(setInput("5")), ""],
-				["six", "6", "54", () => dispatch(setInput("6")), ""],
+				["four", "4", "52", () => dispatch(appendNumber("4")), ""],
+				["five", "5", "53", () => dispatch(appendNumber("5")), ""],
+				["six", "6", "54", () => dispatch(appendNumber("6")), ""],
 
 				// row 4
 
-				["one", "1", "49", () => dispatch(setInput("1")), ""],
-				["two", "2", "50", () => dispatch(setInput("2")), ""],
-				["three", "3", "51", () => dispatch(setInput("3")), ""],
+				["one", "1", "49", () => dispatch(appendNumber("1")), ""],
+				["two", "2", "50", () => dispatch(appendNumber("2")), ""],
+				["three", "3", "51", () => dispatch(appendNumber("3")), ""],
 
 				// row 5
 				[
@@ -101,8 +101,8 @@ const Keys = () => {
 					handleTheme,
 					"rounded-bl-lg !bg-white/50 dark:!bg-black/50",
 				],
-				["zero", "0", "48", () => dispatch(setInput("0")), ""],
-				["decimal", ".", "190", () => dispatch(setInput(".")), ""],
+				["zero", "0", "48", () => dispatch(appendNumber("0")), ""],
+				["decimal", ".", "190", () => dispatch(appendNumber(".")), ""],
 				[
 					"clear",
 					"AC",
